@@ -31,8 +31,6 @@ module.exports = {
     await burnEsteem(guild.id, burnAmount);
 
     await interaction.reply({
-      content: `Transferred ${transferAmount.toFixed(2)} Esteem to <@${targetId}>. ${burnAmount.toFixed(2)} Esteem were burned.`,
-      ephemeral: true
-    });
+      content: `Transferred ${transferAmount.toFixed(2)} Esteem to <@${targetId}>. ${burnAmount.toFixed(2)} Esteem were burned.`});
   },
 };
