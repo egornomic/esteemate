@@ -1,24 +1,23 @@
-const { async } = require('@firebase/util');
 const admin = require('firebase-admin');
 const db = admin.firestore();
 
-async function updateRep(guildId, userId, delta) {
+async function updateEsteem(guildId, userId, delta) {
   const userRef = db.collection('reputation').doc(guildId).collection('users').doc(userId);
   await userRef.set({ reputation: admin.firestore.FieldValue.increment(delta) }, { merge: true });
 }
 
-async function burnRep(guildId, amount) {
+async function burnEsteem(guildId, amount) {
   const guildRef = db.collection('reputation').doc(guildId);
   await guildRef.set({ burned: admin.firestore.FieldValue.increment(amount) }, { merge: true });
 }
 
-async function getRep(guildId, userId) {
+async function getEsteem(guildId, userId) {
   const userRef = db.collection('reputation').doc(guildId).collection('users').doc(userId);
   const userDoc = await userRef.get();
   return userDoc.exists ? userDoc.data().reputation : 0;
 }
 
-async function getTopRep(guildId) {
+async function getTopEsteem(guildId) {
   const usersSnapshot = await db.collection('reputation')
     .doc(guildId)
     .collection('users')
@@ -30,13 +29,13 @@ async function getTopRep(guildId) {
   return topUsers;
 }
 
-async function getBurnedRep(guildId) {
+async function getBurnedEsteem(guildId) {
   const guildRef = db.collection('reputation').doc(guildId);
   const guildDoc = await guildRef.get();
   return guildDoc.exists ? guildDoc.data().burned : 0;
 }
 
-async function getTotalRep(guildId) {
+async function getTotalEsteem(guildId) {
   const usersSnapshot = await db.collection('reputation')
     .doc(guildId)
     .collection('users')
@@ -47,10 +46,10 @@ async function getTotalRep(guildId) {
 }
 
 module.exports = {
-  updateRep,
-  burnRep,
-  getRep,
-  getTopRep,
-  getBurnedRep,
-  getTotalRep,
+  updateEsteem,
+  burnEsteem,
+  getEsteem,
+  getTopEsteem,
+  getBurnedEsteem,
+  getTotalEsteem,
 };

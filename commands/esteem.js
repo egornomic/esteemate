@@ -1,20 +1,20 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { updateRep, burnRep } = require('../utils/firebase');
+const { updateEsteem, burnEsteem } = require('../utils/firebase');
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('give-rep')
-    .setDescription('Give reputation to another user.')
+    .setName('esteem')
+    .setDescription('Send Esteem to another user.')
     .addNumberOption(option =>
       option
         .setName('amount')
-        .setDescription('The amount of reputation to send.')
+        .setDescription('The amount of Esteem to send.')
         .setRequired(true)
     )
     .addUserOption(option =>
       option
         .setName('to')
-        .setDescription('The user to send reputation to.')
+        .setDescription('The user to send Esteem to.')
         .setRequired(true)
     ),
   async execute(interaction) {
@@ -26,12 +26,12 @@ module.exports = {
     const transferAmount = amount * 0.9;
     const burnAmount = amount * 0.1;
 
-    await updateRep(guild.id, senderId, -amount);
-    await updateRep(guild.id, targetId, transferAmount);
-    await burnRep(guild.id, burnAmount);
+    await updateEsteem(guild.id, senderId, -amount);
+    await updateEsteem(guild.id, targetId, transferAmount);
+    await burnEsteem(guild.id, burnAmount);
 
     await interaction.reply({
-      content: `Transferred ${transferAmount.toFixed(2)} reputation to <@${targetId}>. ${burnAmount.toFixed(2)} reputation were burned.`,
+      content: `Transferred ${transferAmount.toFixed(2)} Esteem to <@${targetId}>. ${burnAmount.toFixed(2)} Esteem were burned.`,
       ephemeral: true
     });
   },
