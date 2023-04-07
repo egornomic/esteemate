@@ -1,0 +1,16 @@
+{
+  "token": "your-bot-token",
+  "guildId": "your-guild-id",
+  "repConstants": {
+    "default": 1,
+    "reply": 1.5,
+    "guildBoost": 10,
+    "threadStarterMessage": 1.3,
+    "stageSpeaker": 3,
+    "reactionReceive": 0.1,
+    "reactionGive": 0.05,
+    "voice": 0.1,
+    "transfer": 0.9
+  },
+  "voiceInterval": 300000
+}

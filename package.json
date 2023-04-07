@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "discord.js": "^14.9.0",
+    "firebase-admin": "^11.6.0"
+  }
+}
