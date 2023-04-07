@@ -31,7 +31,7 @@ for (const file of commandFiles) {
   client.commands.set(command.data.name, command);
 }
 
-const { updateRep } = require('./utils/firebase');
+const { updateEsteem } = require('./utils/firebase');
 
 client.once('ready', async () => {
   console.log('Bot is ready!');
@@ -89,30 +89,30 @@ client.on('messageCreate', async (message) => {
       repToAdd = config.repConstants.default;
   }
 
-  await updateRep(message.guild.id, message.author.id, repToAdd);
+  await updateEsteem(message.guild.id, message.author.id, repToAdd);
 });
 
 // client.on('messageCreate', async (message) => {
 //   if (message.author.bot) return;
 
 //   const repToAdd = message.type === 19 ? config.repConstants.message + config.repConstants.reply : config.repConstants.message;
-//   await updateRep(message.guild.id, message.author.id, repToAdd);
+//   await updateEsteem(message.guild.id, message.author.id, repToAdd);
 // });
 
 client.on('messageReactionAdd', async (reaction, user) => {
   if (user.bot) return;
   if (reaction.message.author.id === user.id) return;
 
-  await updateRep(reaction.message.guild.id, reaction.message.author.id, config.repConstants.reactionReceive);
-  await updateRep(reaction.message.guild.id, user.id, config.repConstants.reactionGive);
+  await updateEsteem(reaction.message.guild.id, reaction.message.author.id, config.repConstants.reactionReceive);
+  await updateEsteem(reaction.message.guild.id, user.id, config.repConstants.reactionGive);
 });
 
 client.on('messageReactionRemove', async (reaction, user) => {
   if (user.bot) return;
   if (reaction.message.author.id === user.id) return;
 
-  await updateRep(reaction.message.guild.id, reaction.message.author.id, -config.repConstants.reactionReceive);
-  await updateRep(reaction.message.guild.id, user.id, -config.repConstants.reactionGive);
+  await updateEsteem(reaction.message.guild.id, reaction.message.author.id, -config.repConstants.reactionReceive);
+  await updateEsteem(reaction.message.guild.id, user.id, -config.repConstants.reactionGive);
 });
 
 // const voiceActivity = new Map();
@@ -124,7 +124,7 @@ client.on('messageReactionRemove', async (reaction, user) => {
 //   if (!oldState.channelId && newState.channelId) {
 //     // User joined a voice channel
 //     const timeout = setTimeout(async () => {
-//       await updateRep(guildId, userId, config.repConstants.voice);
+//       await updateEsteem(guildId, userId, config.repConstants.voice);
 //       voiceActivity.delete(`${guildId}-${userId}`);
 //     }, config.voiceInterval);
 
