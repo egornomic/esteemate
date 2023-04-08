@@ -70,6 +70,9 @@ client.on('interactionCreate', async (interaction) => {
 client.on('messageCreate', async (message) => {
   if (message.author.bot) return;
 
+  const previousMessage = await message.channel.messages.fetch({ limit: 1, before: message.id }).then(messages => messages.last());
+  if (previousMessage.author.id === message.author.id) return;
+
   let repToAdd;
 
   switch (message.type) {
