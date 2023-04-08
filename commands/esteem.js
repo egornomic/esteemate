@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { updateEsteem, burnEsteem } = require('../utils/firebase');
+const { logActivity } = require('../utils/logger');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -18,8 +19,10 @@ module.exports = {
         .setRequired(true)
     ),
   async execute(interaction) {
-    const senderId = interaction.user.id;
-    const targetId = interaction.options.getUser('to').id;
+    const senderUser = interaction.user;
+    const senderId = senderUser.id;
+    const targetUser = interaction.options.getUser('to');
+    const targetId = targetUser.id;
     const amount = interaction.options.getNumber('amount');
 
     if (amount <= 0) {
@@ -45,10 +48,13 @@ module.exports = {
     const burnAmount = amount * 0.1;
 
     await updateEsteem(guild.id, senderId, -amount);
+    logActivity(interaction.client, `${senderUser} has lost **${amount}** esteem for sending **${transferAmount}** esteem to ${targetUser}.`);
     await updateEsteem(guild.id, targetId, transferAmount);
+    logActivity(interaction.client, `${targetUser} has received **${transferAmount}** esteem for receiving **${amount}** esteem from ${senderUser}.`);
     await burnEsteem(guild.id, burnAmount);
+    logActivity(interaction.client, `**${burnAmount}** esteem were burned for sending **${amount}** esteem from ${senderUser} to ${targetUser}.`);
 
     await interaction.reply({
-      content: `Transferred ${transferAmount.toFixed(2)} Esteem to <@${targetId}>. ${burnAmount.toFixed(2)} Esteem were burned.`});
+      content: `Transferred **${transferAmount.toFixed(2)}** Esteem to <@${targetId}>. **${burnAmount.toFixed(2)}** Esteem were burned.`});
   },
 };
