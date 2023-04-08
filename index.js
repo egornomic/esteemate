@@ -74,7 +74,7 @@ client.on('messageCreate', async (message) => {
 
   switch (message.type) {
     case 19:
-      repToAdd = config.repConstants.reply;
+      repToAdd = config.repConstants.reply * message.content.length;
       break;
     case 8:
       repToAdd = config.repConstants.guildBoost;
@@ -86,7 +86,7 @@ client.on('messageCreate', async (message) => {
       repToAdd = config.repConstants.stageSpeaker;
       break;
     default:
-      repToAdd = config.repConstants.default;
+      repToAdd = config.repConstants.default * message.content.length;
   }
 
   await updateEsteem(message.guild.id, message.author.id, repToAdd);
