@@ -1,6 +1,7 @@
 {
   "token": "your-bot-token",
   "guildId": "your-guild-id",
+  "logChannelId": "your-log-channel-id",
   "repConstants": {
     "default": 1,
     "reply": 1.5,
@@ -11,6 +12,5 @@
     "reactionGive": 0.05,
     "voice": 0.1,
     "transfer": 0.9
-  },
-  "voiceInterval": 300000
+  }
 }
