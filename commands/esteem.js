@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
-const { updateEsteem, burnEsteem } = require('../utils/firebase');
+const { updateEsteem, burnEsteem, getEsteem } = require('../utils/firebase');
 const { logActivity } = require('../utils/logger');
 
 module.exports = {
@@ -30,14 +30,15 @@ module.exports = {
     const targetId = targetUser.id;
     const amount = interaction.options.getNumber('amount');
     const reason = interaction.options.getString('for') || 'no reason';
+    const senderEsteem = await getEsteem(interaction.guild.id, senderId);
 
-    if (amount <= 0) {
+    if (amount <= 0 || senderEsteem < amount) {
       const cheaterRole = interaction.guild.roles.cache.find(role => role.name === 'Cheater');
       if (cheaterRole) {
         const member = await interaction.guild.members.fetch(interaction.user.id);
         await member.roles.add(cheaterRole);
         await interaction.reply({
-          content: `Uh-oh! It looks like someone's been caught red-handed! 🚨 You've been branded with the <@&${cheaterRole.id}> role for trying to pull a sneaky one with negative Esteem. Better luck next time, slick!`,
+          content: `Uh-oh! It looks like someone's been caught red-handed! 🚨 You've been branded with the <@&${cheaterRole.id}> role for trying to pull a sneaky one. Better luck next time, slick!`,
           ephemeral: true
         });
       } else {
