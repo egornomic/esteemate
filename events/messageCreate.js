@@ -6,7 +6,7 @@ module.exports = async (client, message) => {
   if (message.author.bot) return;
 
   const previousMessage = await message.channel.messages.fetch({ limit: 1, before: message.id }).then(messages => messages.last());
-  if (previousMessage.author.id === message.author.id) return;
+  if (previousMessage && previousMessage.author.id === message.author.id) return;
 
   let repToAdd;
 
