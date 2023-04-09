@@ -6,24 +6,30 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName('esteem')
     .setDescription('Send Esteem to another user.')
-    .addNumberOption(option =>
-      option
-        .setName('amount')
-        .setDescription('The amount of Esteem to send.')
-        .setRequired(true)
-    )
     .addUserOption(option =>
       option
-        .setName('to')
-        .setDescription('The user to send Esteem to.')
-        .setRequired(true)
-    ),
+      .setName('to')
+      .setDescription('The user to send Esteem to.')
+      .setRequired(true)
+      )
+      .addNumberOption(option =>
+        option
+          .setName('amount')
+          .setDescription('The amount of Esteem to send. 10% of this amount will be burned.')
+          .setRequired(true)
+      ).addStringOption(option =>
+        option
+          .setName('for')
+          .setDescription('The reason for sending Esteem.')
+          .setRequired(false)
+      ),
   async execute(interaction) {
     const senderUser = interaction.user;
     const senderId = senderUser.id;
     const targetUser = interaction.options.getUser('to');
     const targetId = targetUser.id;
     const amount = interaction.options.getNumber('amount');
+    const reason = interaction.options.getString('for');
 
     if (amount <= 0) {
       const cheaterRole = interaction.guild.roles.cache.find(role => role.name === 'Cheater');
@@ -55,6 +61,6 @@ module.exports = {
     logActivity(interaction.client, `**${burnAmount}** esteem were burned for sending **${amount}** esteem from ${senderUser} to ${targetUser}.`);
 
     await interaction.reply({
-      content: `Transferred **${transferAmount.toFixed(2)}** Esteem to <@${targetId}>. **${burnAmount.toFixed(2)}** Esteem were burned.`});
+      content: `Transferred **${transferAmount.toFixed(2)}** Esteem to <@${targetId}> for ${reason}. **${burnAmount.toFixed(2)}** Esteem were burned.`});
   },
 };
