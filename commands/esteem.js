@@ -29,7 +29,7 @@ module.exports = {
     const targetUser = interaction.options.getUser('to');
     const targetId = targetUser.id;
     const amount = interaction.options.getNumber('amount');
-    const reason = interaction.options.getString('for');
+    const reason = interaction.options.getString('for') || 'no reason';
 
     if (amount <= 0) {
       const cheaterRole = interaction.guild.roles.cache.find(role => role.name === 'Cheater');

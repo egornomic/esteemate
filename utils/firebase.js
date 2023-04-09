@@ -17,6 +17,17 @@ async function getEsteem(guildId, userId) {
   return userDoc.exists ? userDoc.data().reputation : 0;
 }
 
+async function getUserRank(guildId, userId) {
+  const usersSnapshot = await db.collection('reputation')
+    .doc(guildId)
+    .collection('users')
+    .orderBy('reputation', 'desc')
+    .get();
+
+  const users = usersSnapshot.docs.map(doc => ({ id: doc.id, reputation: doc.data().reputation }));
+  return users.findIndex(user => user.id === userId) + 1;
+}
+
 async function getTopEsteem(guildId) {
   const usersSnapshot = await db.collection('reputation')
     .doc(guildId)
@@ -52,4 +63,5 @@ module.exports = {
   getTopEsteem,
   getBurnedEsteem,
   getTotalEsteem,
+  getUserRank,
 };
