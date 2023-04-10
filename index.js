@@ -3,6 +3,9 @@ const fs = require('fs');
 const config = require('./config.json');
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
+require ('dotenv').config();
+
+const DISCORD_BOT_TOKEN = process.env.DISCORD_BOT_TOKEN;
 
 // Firebase Setup
 const admin = require('firebase-admin');
@@ -59,4 +62,4 @@ for (const file of eventFiles) {
   client.on(eventName, event.bind(null, client));
 }
 
-client.login(config.token);
+client.login(DISCORD_BOT_TOKEN);
