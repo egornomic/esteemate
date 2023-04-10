@@ -11,5 +11,5 @@ module.exports = async (client, reaction, user) => {
   await updateEsteem(reaction.message.guild.id, user.id, config.repConstants.reactionGive * reactionCount);
   logActivity(client, `**${user}** has received **${config.repConstants.reactionGive}** esteem for giving a reaction to **${reaction.message.author}**.`);
   await updateEsteem(reaction.message.guild.id, reaction.message.author.id, config.repConstants.reactionReceive);
-  logActivity(client, `**${reaction.message.author}** has received **${config.repConstants.reactionReceive}** esteem for receiving a reaction from **${user}**.`);
+  logActivity(client, `**${reaction.message.author.id}** has received **${config.repConstants.reactionReceive}** esteem for receiving a reaction from **${user.id}**.`);
 };

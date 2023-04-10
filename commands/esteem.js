@@ -55,11 +55,11 @@ module.exports = {
     const burnAmount = amount * 0.1;
 
     await updateEsteem(guild.id, senderId, -amount);
-    logActivity(interaction.client, `${senderUser} has lost **${amount}** esteem for sending **${transferAmount}** esteem to ${targetUser}.`);
+    logActivity(interaction.client, `${senderId} has lost **${amount}** esteem for sending **${transferAmount}** esteem to ${targetId}.`);
     await updateEsteem(guild.id, targetId, transferAmount);
-    logActivity(interaction.client, `${targetUser} has received **${transferAmount}** esteem for receiving **${amount}** esteem from ${senderUser}.`);
+    logActivity(interaction.client, `${targetId} has received **${transferAmount}** esteem for receiving **${amount}** esteem from ${senderId}.`);
     await burnEsteem(guild.id, burnAmount);
-    logActivity(interaction.client, `**${burnAmount}** esteem were burned for sending **${amount}** esteem from ${senderUser} to ${targetUser}.`);
+    logActivity(interaction.client, `**${burnAmount}** esteem were burned for sending **${amount}** esteem from ${senderId} to ${targetId}.`);
 
     await interaction.reply({
       content: `Transferred **${transferAmount.toFixed(2)}** Esteem to <@${targetId}> for ${reason}. **${burnAmount.toFixed(2)}** Esteem were burned.`});

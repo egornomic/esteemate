@@ -28,5 +28,5 @@ module.exports = async (client, message) => {
   }
 
   await updateEsteem(message.guild.id, message.author.id, repToAdd);
-  logActivity(client, `**${message.author}** has received **${repToAdd}** esteem for sending a message in **${message.channel}**.`);
+  logActivity(client, `**${message.id}** has received **${repToAdd}** esteem for sending a message in **${message.channel}**.`);
 };

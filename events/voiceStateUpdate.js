@@ -19,6 +19,6 @@ module.exports = async (client, oldState, newState) => {
     userVoiceTime.delete(userId);
     if (repToAdd <= 0) return;
     await updateEsteem(guildId, userId, repToAdd);
-    logActivity(client, `**${newState.member}** has received **${repToAdd}** esteem for being in a voice channel for **${Math.floor(timeSpentInVoice / 60000)}** minutes.`);
+    logActivity(client, `**${newState.member.id}** has received **${repToAdd}** esteem for being in a voice channel for **${Math.floor(timeSpentInVoice / 60000)}** minutes.`);
   }
 };
