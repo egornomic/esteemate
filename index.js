@@ -37,7 +37,7 @@ for (const file of commandFiles) {
 client.once('ready', async () => {
   console.log('Bot is ready!');
 
-  const rest = new REST({ version: '9' }).setToken(config.token);
+  const rest = new REST({ version: '9' }).setToken(DISCORD_BOT_TOKEN);
 
   try {
     console.log('Started refreshing application (/) commands.');
