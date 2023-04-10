@@ -11,6 +11,6 @@ module.exports = {
     const reputation = await getEsteem(guild.id, userId);
     const rank = await getUserRank(guild.id, userId);
 
-    await interaction.reply({ content: `You have ${reputation.toFixed(2)} Esteem. Your rank is **${rank}**`, ephemeral: true });
+    await interaction.reply({ content: `You have ${reputation.toFixed(2)} Esteem. Your rank is **${rank}**.`, ephemeral: true });
   },
 };
