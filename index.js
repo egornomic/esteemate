@@ -4,6 +4,7 @@ const config = require('./config.json');
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
 const { decayPoints } = require('./utils/firebase');
+const { logActivity } = require('./utils/logger');
 require ('dotenv').config();
 
 const DISCORD_BOT_TOKEN = process.env.DISCORD_BOT_TOKEN;
@@ -54,7 +55,8 @@ client.once('ready', async () => {
 });
 
 setInterval(async () => {
-  await decayPoints(config.guildId);
+  const totalDecay = await decayPoints(config.guildId);
+  logActivity(client, `Decayed ${totalDecay} points from all users.`);
 }, 24 * 60 * 60 * 1000);
 
 client.login(DISCORD_BOT_TOKEN);

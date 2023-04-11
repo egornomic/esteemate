@@ -1,7 +1,6 @@
 const admin = require('firebase-admin');
 const serviceAccount = require('../firebase-key.json');
 const config = require('../config.json');
-const { logActivity } = require('./logger');
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -68,12 +67,14 @@ async function getTotalEsteem(guildId) {
 /**
  * Decay points for users who have not been active for a while using polynomial decay.
  * @param {string} guildId - The ID of a guild for which to decay points.
- * @returns {Promise<void>} - A promise that resolves when the decay is complete.
+ * @returns {number} The total amount of decayed points.
  */
 async function decayPoints(guildId) {
   const oneDayMs = 24 * 60 * 60 * 1000;
   const currentTimestamp = Date.now();
+  let totalDecayAmount = 0;
 
+  const guildRef = db.collection('reputation').doc(guildId);
   const usersSnapshot = await db.collection('reputation')
     .doc(guildId)
     .collection('users')
@@ -87,12 +88,14 @@ async function decayPoints(guildId) {
 
     if (inactiveDays > 0) {
       const decayAmount = config.repConstants.InactivityDecayCoefficient * Math.pow(inactiveDays, 2);
+      totalDecayAmount += decayAmount;
       const newRep = Math.max(userData.reputation - decayAmount, 0);
-
       userDoc.ref.update({ reputation: newRep });
-      logActivity(`Decayed ${decayAmount} points from ${userDoc.id} for being inactive for ${inactiveDays} days.`);
     }
   });
+
+  guildRef.set({ decay: admin.firestore.FieldValue.increment(totalDecayAmount) }, { merge: true });
+  return totalDecayAmount;
 }
 
 module.exports = {
