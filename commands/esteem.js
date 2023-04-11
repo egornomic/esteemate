@@ -62,6 +62,6 @@ module.exports = {
     logActivity(interaction.client, `**${burnAmount}** esteem were burned for sending **${amount}** esteem from ${senderId} to ${targetId}.`);
 
     await interaction.reply({
-      content: `Transferred **${transferAmount.toFixed(2)}** Esteem to <@${targetId}> for ${reason}. **${burnAmount.toFixed(2)}** Esteem were burned.`});
+      content: `<@${senderId}> sent **${transferAmount.toFixed(2)}** Esteem to <@${targetId}> for ${reason}. **${burnAmount.toFixed(2)}** Esteem were burned.`});
   },
 };
