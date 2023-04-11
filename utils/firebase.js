@@ -1,9 +1,17 @@
 const admin = require('firebase-admin');
+const serviceAccount = require('../firebase-key.json');
+const { logActivity } = require('./logger');
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+});
+
 const db = admin.firestore();
 
 async function updateEsteem(guildId, userId, delta) {
   const userRef = db.collection('reputation').doc(guildId).collection('users').doc(userId);
   await userRef.set({ reputation: admin.firestore.FieldValue.increment(delta) }, { merge: true });
+  await userRef.set({ lastActivityTimestamp: Date.now() }, { merge: true });
 }
 
 async function burnEsteem(guildId, amount) {
@@ -56,6 +64,37 @@ async function getTotalEsteem(guildId) {
   return totalRep;
 }
 
+/**
+ * Decay points for users who have not been active for a while using polynomial decay.
+ * @param {string} guildId - The ID of a guild for which to decay points.
+ * @returns {Promise<void>} - A promise that resolves when the decay is complete.
+ */
+async function decayPoints(guildId) {
+  const oneDayMs = 24 * 60 * 60 * 1000;
+  const currentTimestamp = Date.now();
+
+  const usersSnapshot = await db.collection('reputation')
+    .doc(guildId)
+    .collection('users')
+    .get();
+
+  usersSnapshot.forEach((userDoc) => {
+    const userData = userDoc.data();
+    const lastActivityTimestamp = userData.lastActivityTimestamp;
+    const inactiveDays = Math.floor((currentTimestamp - lastActivityTimestamp) / oneDayMs);
+    if (userData.reputation === 0) return;
+
+    if (inactiveDays > 0) {
+      const decayCoefficient = 0.1
+      const decayAmount = decayCoefficient * Math.pow(inactiveDays, 2);
+      const newRep = Math.max(userData.reputation - decayAmount, 0);
+
+      userDoc.ref.update({ reputation: newRep });
+      logActivity(`Decayed ${decayAmount} points from ${userDoc.id} for being inactive for ${inactiveDays} days.`);
+    }
+  });
+}
+
 module.exports = {
   updateEsteem,
   burnEsteem,
@@ -64,4 +103,5 @@ module.exports = {
   getBurnedEsteem,
   getTotalEsteem,
   getUserRank,
+  decayPoints,
 };
