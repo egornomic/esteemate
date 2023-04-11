@@ -1,5 +1,6 @@
 const admin = require('firebase-admin');
 const serviceAccount = require('../firebase-key.json');
+const config = require('../config.json');
 const { logActivity } = require('./logger');
 
 admin.initializeApp({
@@ -85,8 +86,7 @@ async function decayPoints(guildId) {
     if (userData.reputation === 0) return;
 
     if (inactiveDays > 0) {
-      const decayCoefficient = 0.1
-      const decayAmount = decayCoefficient * Math.pow(inactiveDays, 2);
+      const decayAmount = config.repConstants.InactivityDecayCoefficient * Math.pow(inactiveDays, 2);
       const newRep = Math.max(userData.reputation - decayAmount, 0);
 
       userDoc.ref.update({ reputation: newRep });
