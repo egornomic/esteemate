@@ -5,8 +5,11 @@ const { logActivity } = require('../utils/logger');
 module.exports = async (client, message) => {
   if (message.author.bot) return;
 
-  const previousMessage = await message.channel.messages.fetch({ limit: 1, before: message.id }).then(messages => messages.last());
+  const previousMessage = await message.channel.messages
+    .fetch({ limit: 1, before: message.id })
+    .then(messages => messages.last());
   if (previousMessage && previousMessage.author.id === message.author.id) return;
+  if (previousMessage.author.bot) return;
 
   let repToAdd;
 
