@@ -39,21 +39,34 @@ async function updateRoles() {
   const guild = client.guilds.cache.get(config.guildId);
   const usersSnapshot = await getAllUsers(config.guildId)
   usersSnapshot.forEach(async userDoc => {
-    const member = await guild.members.fetch(userDoc.id);
-    const reputation = userDoc.data().reputation;
-    for (const roleName in config.roles) {
-      const role = config.roles[roleName];
-      const roleObj = await guild.roles.fetch(role.id);
-      if (reputation >= role.requirement) {
-        if (!member.roles.cache.has(role.id)) {
-          await member.roles.add(roleObj);
-          logActivity(client, `**${userDoc.id}** has reached **${roleObj.name}**!`);
+    try {
+      const member = await guild.members.fetch(userDoc.id);
+      const reputation = userDoc.data().reputation;
+      for (const roleName in config.roles) {
+        const role = config.roles[roleName];
+        const roleObj = await guild.roles.fetch(role.id);
+        if (reputation >= role.requirement) {
+          if (!member.roles.cache.has(role.id)) {
+            await member.roles.add(roleObj);
+            logActivity(client, `**${userDoc.id}** has reached **${roleObj.name}**!`);
+          }
+        } else {
+          if (member.roles.cache.has(role.id)) {
+            await member.roles.remove(roleObj);
+            logActivity(client, `**${userDoc.id}** has lost **${roleObj.name}**!`);
+          }
         }
+      }
+    } catch (error) {
+      if (error.code === 10013 || 10007) {
+        const lastActivityTimestamp = userDoc.data().lastActivityTimestamp;
+        if (!lastActivityTimestamp || Date.now() - lastActivityTimestamp > 30 * 24 * 60 * 60 * 1000) {
+          await userDoc.ref.delete();
+          logActivity(client, `**${userDoc.id}** has been removed from the database.`);
+        }
+        console.log(`Member not found in the guild: ${userDoc.id}`);
       } else {
-        if (member.roles.cache.has(role.id)) {
-          await member.roles.remove(roleObj);
-          logActivity(client, `**${userDoc.id}** has lost **${roleObj.name}**!`);
-        }
+        console.error('An error occurred:', error);
       }
     }
   });
