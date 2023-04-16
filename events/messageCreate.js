@@ -41,10 +41,12 @@ module.exports = async (client, message) => {
     if (newRep >= role.requirement) {
       if (!message.member.roles.cache.has(role.id)) {
         await message.member.roles.add(roleObj);
+        logActivity(client, `**${message.author.id}** has reached **${roleName}**!`);
       }
     } else {
       if (message.member.roles.cache.has(role.id)) {
         await message.member.roles.remove(roleObj);
+        logActivity(client, `**${message.author.id}** has lost **${roleName}**.`);
       }
     }
   }
