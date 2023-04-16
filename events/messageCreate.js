@@ -8,8 +8,11 @@ module.exports = async (client, message) => {
   const previousMessage = await message.channel.messages
     .fetch({ limit: 1, before: message.id })
     .then(messages => messages.last());
-  if (previousMessage && previousMessage.author.id === message.author.id) return;
-  if (previousMessage.author.bot) return;
+
+  if (previousMessage &&
+      (previousMessage.author.id === message.author.id || previousMessage.author.bot)) {
+    return;
+  }
 
   let repToAdd;
 
@@ -30,26 +33,7 @@ module.exports = async (client, message) => {
       repToAdd = config.repConstants.default * message.content.length;
   }
 
-  const newRep = await updateEsteem(message.guild.id, message.author.id, repToAdd);
-
-  /** 
-   * Check if the user has reached a new role threshold and add/remove the role accordingly.
-   */
-  for (const roleName in config.roles) {
-    const role = config.roles[roleName];
-    const roleObj = await message.guild.roles.fetch(role.id);
-    if (newRep >= role.requirement) {
-      if (!message.member.roles.cache.has(role.id)) {
-        await message.member.roles.add(roleObj);
-        logActivity(client, `**${message.author.id}** has reached **${roleName}**!`);
-      }
-    } else {
-      if (message.member.roles.cache.has(role.id)) {
-        await message.member.roles.remove(roleObj);
-        logActivity(client, `**${message.author.id}** has lost **${roleName}**.`);
-      }
-    }
-  }
+  updateEsteem(message.guild.id, message.author.id, repToAdd);
 
   logActivity(client, `**${message.id}** has received **${repToAdd}** esteem for sending a message in **${message.channel}**.`);
 };

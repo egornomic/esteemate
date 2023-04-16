@@ -3,7 +3,7 @@ const fs = require('fs');
 const config = require('./config.json');
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
-const { decayEsteem } = require('./utils/firebase');
+const { decayEsteem, getAllUsers } = require('./utils/firebase');
 const { logActivity } = require('./utils/logger');
 require ('dotenv').config();
 
@@ -35,8 +35,32 @@ for (const file of eventFiles) {
   client.on(eventName, event.bind(null, client));
 }
 
+async function updateRoles() {
+  const guild = client.guilds.cache.get(config.guildId);
+  const usersSnapshot = await getAllUsers(config.guildId)
+  usersSnapshot.forEach(async userDoc => {
+    const member = await guild.members.fetch(userDoc.id);
+    const reputation = userDoc.data().reputation;
+    for (const roleName in config.roles) {
+      const role = config.roles[roleName];
+      const roleObj = await guild.roles.fetch(role.id);
+      if (reputation >= role.requirement) {
+        if (!member.roles.cache.has(role.id)) {
+          await member.roles.add(roleObj);
+          logActivity(client, `**${userDoc.id}** has reached **${roleObj.name}**!`);
+        }
+      } else {
+        if (member.roles.cache.has(role.id)) {
+          await member.roles.remove(roleObj);
+          logActivity(client, `**${userDoc.id}** has lost **${roleObj.name}**!`);
+        }
+      }
+    }
+  });
+}
+
 client.once('ready', async () => {
-  console.log('Bot is ready!');
+  console.log(`Logged in as ${client.user.tag}!`);
 
   const rest = new REST({ version: '9' }).setToken(DISCORD_BOT_TOKEN);
 
@@ -52,11 +76,15 @@ client.once('ready', async () => {
   } catch (error) {
     console.error(error);
   }
+
+  await updateRoles();
+
 });
 
 setInterval(async () => {
   const totalDecay = await decayEsteem(config.guildId);
   logActivity(client, `Decayed ${totalDecay} Esteem from all users.`);
+  await updateRoles();
 }, 24 * 60 * 60 * 1000);
 
 client.login(DISCORD_BOT_TOKEN);

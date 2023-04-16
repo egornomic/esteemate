@@ -111,6 +111,20 @@ async function decayEsteem(guildId) {
   return totalDecayAmount;
 }
 
+/**
+ * Function to get all users and their reputation from a guild.
+ * @param {string} guildId - The ID of a guild for which to get user IDs.
+ * @returns {object} An object containing users snapshot.
+ */
+async function getAllUsers(guildId) {
+  const usersSnapshot = await db.collection('reputation')
+    .doc(guildId)
+    .collection('users')
+    .get();
+
+  return usersSnapshot;
+}
+
 module.exports = {
   updateEsteem,
   burnEsteem,
@@ -120,4 +134,5 @@ module.exports = {
   getTotalEsteem,
   getUserRank,
   decayEsteem,
+  getAllUsers,
 };
