@@ -27,6 +27,24 @@ module.exports = async (client, message) => {
       repToAdd = config.repConstants.default * message.content.length;
   }
 
-  await updateEsteem(message.guild.id, message.author.id, repToAdd);
+  const newRep = await updateEsteem(message.guild.id, message.author.id, repToAdd);
+
+  /** 
+   * Check if the user has reached a new role threshold and add/remove the role accordingly.
+   */
+  for (const roleName in config.roles) {
+    const role = config.roles[roleName];
+    const roleObj = await message.guild.roles.fetch(role.id);
+    if (newRep >= role.requirement) {
+      if (!message.member.roles.cache.has(role.id)) {
+        await message.member.roles.add(roleObj);
+      }
+    } else {
+      if (message.member.roles.cache.has(role.id)) {
+        await message.member.roles.remove(roleObj);
+      }
+    }
+  }
+
   logActivity(client, `**${message.id}** has received **${repToAdd}** esteem for sending a message in **${message.channel}**.`);
 };

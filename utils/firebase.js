@@ -8,10 +8,19 @@ admin.initializeApp({
 
 const db = admin.firestore();
 
+/**
+ * Function to update points for a user.
+ * @param {string} guildId - The ID of a guild for which to update points.
+ * @param {string} userId - The ID of a user for which to update points.
+ * @param {number} delta - The amount of points to add or subtract.
+ * @returns {number} The new amount of points.
+ */
 async function updateEsteem(guildId, userId, delta) {
   const userRef = db.collection('reputation').doc(guildId).collection('users').doc(userId);
   await userRef.set({ reputation: admin.firestore.FieldValue.increment(delta) }, { merge: true });
   await userRef.set({ lastActivityTimestamp: Date.now() }, { merge: true });
+  const userDoc = await userRef.get();
+  return userDoc.data().reputation;
 }
 
 async function burnEsteem(guildId, amount) {
