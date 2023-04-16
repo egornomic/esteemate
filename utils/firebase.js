@@ -79,11 +79,9 @@ async function getTotalEsteem(guildId) {
  * @returns {number} The total amount of decayed points.
  */
 async function decayEsteem(guildId) {
-  console.log('Decaying esteem...');
   const oneDayMs = 24 * 60 * 60 * 1000;
   const currentTimestamp = Date.now();
   let totalDecayAmount = 0;
-  console.log(`Fetching users from guild ${guildId}...`);
   const guildRef = db.collection('reputation').doc(guildId);
   const usersSnapshot = await db.collection('reputation')
     .doc(guildId)
