@@ -3,7 +3,7 @@ const fs = require('fs');
 const config = require('./config.json');
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
-const { decayPoints } = require('./utils/firebase');
+const { decayEsteem } = require('./utils/firebase');
 const { logActivity } = require('./utils/logger');
 require ('dotenv').config();
 
@@ -55,8 +55,8 @@ client.once('ready', async () => {
 });
 
 setInterval(async () => {
-  const totalDecay = await decayPoints(config.guildId);
-  logActivity(client, `Decayed ${totalDecay} points from all users.`);
+  const totalDecay = await decayEsteem(config.guildId);
+  logActivity(client, `Decayed ${totalDecay} Esteem from all users.`);
 }, 24 * 60 * 60 * 1000);
 
 client.login(DISCORD_BOT_TOKEN);

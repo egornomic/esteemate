@@ -78,30 +78,36 @@ async function getTotalEsteem(guildId) {
  * @param {string} guildId - The ID of a guild for which to decay points.
  * @returns {number} The total amount of decayed points.
  */
-async function decayPoints(guildId) {
+async function decayEsteem(guildId) {
+  console.log('Decaying esteem...');
   const oneDayMs = 24 * 60 * 60 * 1000;
   const currentTimestamp = Date.now();
   let totalDecayAmount = 0;
-
+  console.log(`Fetching users from guild ${guildId}...`);
   const guildRef = db.collection('reputation').doc(guildId);
   const usersSnapshot = await db.collection('reputation')
     .doc(guildId)
     .collection('users')
     .get();
 
-  usersSnapshot.forEach((userDoc) => {
+  for (const userDoc of usersSnapshot.docs) {
     const userData = userDoc.data();
     const lastActivityTimestamp = userData.lastActivityTimestamp;
     const inactiveDays = Math.floor((currentTimestamp - lastActivityTimestamp) / oneDayMs);
-    if (userData.reputation === 0) return;
+    if (userData.reputation === 0) continue;
+    let newRep = 0;
 
     if (inactiveDays > 0) {
       const decayAmount = config.repConstants.InactivityDecayCoefficient * Math.pow(inactiveDays, 2);
-      totalDecayAmount += decayAmount;
-      const newRep = Math.max(userData.reputation - decayAmount, 0);
-      userDoc.ref.update({ reputation: newRep });
+      if (userData.reputation > decayAmount) {
+        newRep = userData.reputation - decayAmount;
+        totalDecayAmount += decayAmount;
+      } else {
+        totalDecayAmount += userData.reputation;
+      }
+      await userDoc.ref.update({ reputation: newRep });
     }
-  });
+  };
 
   guildRef.set({ decay: admin.firestore.FieldValue.increment(totalDecayAmount) }, { merge: true });
   return totalDecayAmount;
@@ -115,5 +121,5 @@ module.exports = {
   getBurnedEsteem,
   getTotalEsteem,
   getUserRank,
-  decayPoints,
+  decayEsteem,
 };
