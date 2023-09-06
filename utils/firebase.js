@@ -63,6 +63,12 @@ async function getBurnedEsteem(guildId) {
   return guildDoc.exists ? guildDoc.data().burned : 0;
 }
 
+async function getDecayedEsteem(guildId) {
+  const guildRef = db.collection('reputation').doc(guildId);
+  const guildDoc = await guildRef.get();
+  return guildDoc.exists ? guildDoc.data().decay : 0;
+}
+
 async function getTotalEsteem(guildId) {
   const usersSnapshot = await db.collection('reputation')
     .doc(guildId)
@@ -131,6 +137,7 @@ module.exports = {
   getEsteem,
   getTopEsteem,
   getBurnedEsteem,
+  getDecayedEsteem,
   getTotalEsteem,
   getUserRank,
   decayEsteem,

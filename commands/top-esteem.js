@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { EmbedBuilder } = require('@discordjs/builders');
-const { getTopEsteem, getBurnedEsteem } = require('../utils/firebase');
+const { getTopEsteem, getBurnedEsteem, getDecayedEsteem } = require('../utils/firebase');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -10,11 +10,12 @@ module.exports = {
     const { guild } = interaction;
     const topUsers = await getTopEsteem(guild.id);
     const burnedRep = await getBurnedEsteem(guild.id);
+    const decayedRep = await getDecayedEsteem(guild.id);
 
     const embed = new EmbedBuilder()
       .setTitle('Top 10 Users by Esteem')
       .setDescription(topUsers.map((user, index) => `${index + 1}. <@${user.id}> - ${user.reputation.toFixed(2)}`).join('\n'))
-      .setFooter({text: `Esteem Burned: ${burnedRep.toFixed(0)}`})
+      .setFooter({text: `Burned: ${burnedRep.toFixed(0)}, Decayed: ${decayedRep.toFixed(0)}`})
 
     await interaction.reply({ embeds: [embed] });
   },
