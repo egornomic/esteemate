@@ -35,5 +35,5 @@ module.exports = async (client, message) => {
 
   updateEsteem(message.guild.id, message.author.id, repToAdd);
 
-  logActivity(client, `**${message.id}** has received **${repToAdd}** esteem for sending the message https://discord.com/channels/${config.guildId}/${message.channel.id}/${message.id}.`);
+  logActivity(client, `**${message.author.id}** has received **${repToAdd}** esteem for sending the message https://discord.com/channels/${config.guildId}/${message.channel.id}/${message.id}.`);
 };
