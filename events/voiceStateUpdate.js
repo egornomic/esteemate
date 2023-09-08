@@ -15,7 +15,7 @@ module.exports = async (client, oldState, newState) => {
     // User left a voice channel
     const startTime = userVoiceTime.get(userId) || Date.now();
     const timeSpentInVoice = Date.now() - startTime;
-    const repToAdd = Math.floor(timeSpentInVoice / 600000) * config.repConstants.voice;
+    const repToAdd = Math.floor(timeSpentInVoice / 600000) * config.weights.voice;
     userVoiceTime.delete(userId);
     if (repToAdd <= 0) return;
     await updateEsteem(guildId, userId, repToAdd);

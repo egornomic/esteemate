@@ -18,19 +18,19 @@ module.exports = async (client, message) => {
 
   switch (message.type) {
     case 19:
-      repToAdd = config.repConstants.reply * message.content.length;
+      repToAdd = config.weights.reply * message.content.length;
       break;
     case 8:
-      repToAdd = config.repConstants.guildBoost;
+      repToAdd = config.weights.guildBoost;
       break;
     case 21:
-      repToAdd = config.repConstants.threadStarterMessage;
+      repToAdd = config.weights.threadStarterMessage;
       break;
     case 29:
-      repToAdd = config.repConstants.stageSpeaker;
+      repToAdd = config.weights.stageSpeaker;
       break;
     default:
-      repToAdd = config.repConstants.default * message.content.length;
+      repToAdd = config.weights.message * message.content.length;
   }
 
   updateEsteem(message.guild.id, message.author.id, repToAdd);
