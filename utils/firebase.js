@@ -102,7 +102,7 @@ async function decayEsteem(guildId) {
     let newRep = 0;
 
     if (inactiveDays > 0) {
-      const decayAmount = config.weights.InactivityDecayCoefficient * Math.pow(inactiveDays, 2);
+      const decayAmount = config.weights.inactivityDecayCoefficient * Math.pow(inactiveDays, 2);
       if (userData.reputation > decayAmount) {
         newRep = userData.reputation - decayAmount;
         totalDecayAmount += decayAmount;
